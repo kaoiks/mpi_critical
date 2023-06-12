@@ -1,6 +1,8 @@
 #include "main.h"
 #include "watek_glowny.h"
 
+int beforeMeInLine;
+
 void mainLoop()
 {
     srandom(time(NULL) + rank);
@@ -24,7 +26,9 @@ void mainLoop()
 				for (int i=0;i<=size-1;i++)
 				if (i!=rank)
 					sendPacket( pkt, i, REQUEST, timestamp);
+				pthread_mutex_lock(&mutex);
 				++timestamp;	
+				pthread_mutex_unlock(&mutex);
 				changeState( InWant );
 				free(pkt);
 			}
@@ -32,7 +36,7 @@ void mainLoop()
 		break;
 	    case InWant:{
 			// println("Czekam na wejście do sekcji krytycznej")
-			int beforeMeInLine = 0;
+			beforeMeInLine = 0;
 			for(int i = 0; i < size; ++i){
 				if(queue[i] < queue[rank]){
 					++beforeMeInLine;
@@ -45,7 +49,7 @@ void mainLoop()
 		}
 	    case InSection:
 		// tutaj zapewne jakiś muteks albo zmienna warunkowa
-		println("Jestem w sekcji krytycznej")
+		println("Jestem w sekcji krytycznej %d", beforeMeInLine)
 		    sleep(5);
 		//if ( perc < 25 ) {
 		    debug("Perc: %d", perc);
@@ -56,7 +60,9 @@ void mainLoop()
 		    for (int i=0;i<=size-1;i++)
 			if (i!=rank)
 			    sendPacket( pkt, (rank+1)%size, RELEASE, timestamp);
-			++timestamp;
+			pthread_mutex_lock(&mutex);
+			++timestamp;	
+			pthread_mutex_unlock(&mutex);
 			queue[rank] = INT_MAX;
 			
 		    changeState( InRun );

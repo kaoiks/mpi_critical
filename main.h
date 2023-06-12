@@ -25,6 +25,7 @@ extern pthread_t threadKom;
 extern int timestamp;
 extern int* queue;
 extern int processNumber;
+extern pthread_mutex_t mutex;
 extern int B; //weapons
 
 /* macro debug - działa jak printf, kiedy zdefiniowano

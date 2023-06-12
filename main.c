@@ -19,6 +19,7 @@ int ackCount = 0;
 int timestamp = 0;
 int* queue;
 int B;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 /* 
  * Każdy proces ma dwa wątki - główny i komunikacyjny
  * w plikach, odpowiednio, watek_glowny.c oraz (siurpryza) watek_komunikacyjny.c
